@@ -16,8 +16,8 @@ app.get("/counter", async (req, res) => {
     const result = await Counter.findOne({
       order: [["id", "DESC"]],
     });
-
-    res.json({ value: result });
+    const response = await Counter.findAll();
+    res.json({ response });
   } catch (error) {
     console.log(error);
   }
@@ -28,7 +28,12 @@ app.post("/counter", async (req, res) => {
   try {
     const { newValue } = req.body;
     const newCounter = await Counter.create({ value: newValue });
-    res.json({ success: true, value: newCounter.value });
+
+    res.json({
+      success: true,
+      value: newCounter.value,
+      createdAt: newCounter.createdAt,
+    });
   } catch (error) {
     console.log(error);
   }

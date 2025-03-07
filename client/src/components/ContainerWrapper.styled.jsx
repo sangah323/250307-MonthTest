@@ -16,7 +16,7 @@ export const ContainerWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid black;
+    border: 1px solid #9e9e9e;
   }
 
   button {
@@ -29,6 +29,11 @@ export const ContainerWrapper = styled.div`
   }
 
   .history-box {
-    border: 1px solid black;
+    border: 1px solid #9e9e9e;
+  }
+
+  .history {
+    font-size: 24px;
+    list-style: none;
   }
 `;

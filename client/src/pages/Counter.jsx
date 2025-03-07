@@ -5,32 +5,37 @@ import { counterReducer } from "../reducer/counterReducer";
 // import { data } from "react-router-dom";
 
 export const Counter = () => {
-  // const [state, setState] = useState({ count: 0, history: [] });
-  const [history, setHistory] = useState([]); // history 따로 만들면 편함
   const [state, setState] = useState({ count: 0 });
+  const [history, setHistory] = useState([]); // history 따로 만들면 편함
 
   // 날짜도 복사해서 넣어, 배열로 가져와 순회 돌려서 뿌려
   useEffect(() => {
-    const getCounter = async () => {
-      const { data } = await axios.get("http://localhost:3005/counter");
-      console.log("data", data);
-      setState({
-        ...state,
-        count: data.value.value,
-        // history: [{ time: data.value.createdAt }],
-      });
-    };
-    getCounter();
+    try {
+      const getCounter = async () => {
+        const data = (await axios.get("http://localhost:3005/counter")).data; // 비동기로 실행
+
+        data.response.map((item, index) => {
+          console.log(item.createdAt);
+        });
+        setHistory([...history, ...data.response]);
+        setState({ count: data.response[0].value }); // axios 실행되기 전 실행?되서 초기값 적용됨 "COUNT:0"
+      };
+      getCounter();
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   const handleDispatch = async (action) => {
     console.log("state", state);
     try {
       const newValue = counterReducer(state, action);
-      console.log("newValue", newValue);
-      console.log("handleDispatch", state);
-      await axios.post("http://localhost:3005/counter", { newValue: newValue });
+      const response = await axios.post("http://localhost:3005/counter", {
+        newValue: newValue,
+      });
+
       setState({ ...state, count: newValue }); // history: [...state.history, time : ]
+      setHistory([...history, { createdAt: response.data.createdAt }]);
     } catch (error) {
       console.log(error);
     }
@@ -46,7 +51,17 @@ export const Counter = () => {
           <button onClick={() => handleDispatch("RESET")}>RESET</button>
         </div>
         <div className="history-box">
-          <ul>{/* <li>{state.history}</li> */}</ul>
+          <ul>
+            {history.length === 0 ? (
+              <h1>Loading..</h1>
+            ) : (
+              history.map((item, index) => (
+                <li className="history" key={index}>
+                  {item.createdAt}
+                </li>
+              ))
+            )}
+          </ul>
         </div>
       </div>
     </ContainerWrapper>
