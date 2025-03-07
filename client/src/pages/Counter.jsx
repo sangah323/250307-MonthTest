@@ -12,13 +12,9 @@ export const Counter = () => {
   useEffect(() => {
     try {
       const getCounter = async () => {
-        const data = (await axios.get("http://localhost:3005/counter")).data; // 비동기로 실행
-
-        data.response.map((item, index) => {
-          console.log(item.createdAt);
-        });
-        setHistory([...history, ...data.response]);
-        setState({ count: data.response[0].value }); // axios 실행되기 전 실행?되서 초기값 적용됨 "COUNT:0"
+        const { data } = (await axios.get("http://localhost:3005/counter")); // 비동기로 실행
+        setHistory([...history, ...data.history]);
+        setState({ count: data.count }); // axios 실행되기 전 실행?되서 초기값 적용됨 "COUNT:0"
       };
       getCounter();
     } catch (error) {
